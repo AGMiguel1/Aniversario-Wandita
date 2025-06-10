@@ -1,51 +1,137 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="shortcut icon"
-      href="assets/img/favicon.png"
-      type="image/x-icon"
-    />
-    <link rel="stylesheet" href="assets/css/style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <title>FELIZ ANIVERSARIO MI WANDITA</title>
-  </head>
+"use client"
 
-  <body>
-    <div class="valentines-day">
-      <div class="envelope"></div>
-      <div class="heart"></div>
-      <div class="text">¡FELIZ ANIVERSARIO<br />MI PRINCESITA HERMOSAA</div>
-      <div class="front"></div>
-    </div>
+import { useState, useRef, useEffect } from "react"
+import { Play, Pause, Volume2 } from "lucide-react"
 
-    <div id="card">
-      <div class="side one">
-        <i class="fas fa-heart"></i>
+export default function AnniversaryCard() {
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [cardFlipped, setCardFlipped] = useState(false)
+  const audioRef = useRef<HTMLAudioElement>(null)
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const handleCardClick = () => {
+    setCardFlipped(!cardFlipped)
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCardFlipped(true)
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-red-200 to-pink-300 flex items-center justify-center p-4">
+      {/* Audio Player */}
+      <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={toggleMusic}
+          className="bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white/90 transition-all duration-300 flex items-center gap-2"
+        >
+          {isPlaying ? <Pause className="w-5 h-5 text-red-500" /> : <Play className="w-5 h-5 text-red-500" />}
+          <Volume2 className="w-4 h-4 text-red-500" />
+        </button>
+        <audio ref={audioRef} loop onEnded={() => setIsPlaying(false)}>
+          {/* Replace with your audio file */}
+          <source src="/audio/photograph.mp3" type="audio/mpeg" />
+          Tu navegador no soporta el elemento de audio.
+        </audio>
       </div>
-      <div class="side two">
-        <p>Querida Wandita,</p>
-        <p>
-          Este dia de hoy cumplimos 1 añito y 2 meses (426 días), llenos de
-          amor, risas y abrazos sinceros, donde recuerdo tus ojos que aún me
-          hacen temblar, como aquel primer día en que empezamos a hablar. Sé que
-          soy un tontote que te hace renegar, pero mi amor por ti es mucho más
-          de lo que peudes imaginar. te amo muchito, mi princesita 🫶
-        </p>
-        <p>¡Feliz Aniversario Mi Princesita hermosa!</p>
-        <p>
-          Con cariño, [El tonto del Miguel Angel (Perdoncito se q soyu un tonto
-          al escribir)]
+
+      {/* Valentine's Day Animation */}
+      <div className="valentines-day relative">
+        {/* Floating Hearts */}
+        <div className="floating-hearts">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="heart-float absolute text-red-400 text-2xl animate-bounce"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${2 + Math.random() * 2}s`,
+              }}
+            >
+              ♥
+            </div>
+          ))}
+        </div>
+
+        {/* Envelope */}
+        <div className="envelope relative w-80 h-60 mx-auto mb-8">
+          <div className="envelope-body bg-white border-4 border-red-300 rounded-lg shadow-xl transform rotate-12 hover:rotate-6 transition-transform duration-500">
+            <div className="envelope-flap absolute top-0 left-0 w-full h-20 bg-red-400 rounded-t-lg transform origin-bottom animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Main Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-red-600 mb-4 animate-pulse">¡FELIZ ANIVERSARIO</h1>
+          <h2 className="text-3xl md:text-5xl font-bold text-pink-600 animate-bounce">MI PRINCESITA HERMOSA!</h2>
+        </div>
+
+        {/* Card */}
+        <div className="card-container perspective-1000 mx-auto">
+          <div
+            className={`card relative w-80 h-96 cursor-pointer transition-transform duration-700 transform-style-preserve-3d ${
+              cardFlipped ? "rotate-y-180" : ""
+            }`}
+            onClick={handleCardClick}
+          >
+            {/* Front Side */}
+            <div className="card-side front absolute inset-0 w-full h-full backface-hidden bg-gradient-to-br from-red-400 to-pink-500 rounded-xl shadow-2xl flex items-center justify-center">
+              <div className="text-center text-white">
+                <div className="text-6xl mb-4 animate-pulse">♥</div>
+                <p className="text-xl font-semibold">Haz clic para abrir</p>
+              </div>
+            </div>
+
+            {/* Back Side */}
+            <div className="card-side back absolute inset-0 w-full h-full backface-hidden rotate-y-180 bg-white rounded-xl shadow-2xl p-6 overflow-y-auto">
+              <div className="text-center h-full flex flex-col justify-center">
+                <h3 className="text-2xl font-bold text-red-600 mb-4">Querida Wandita,</h3>
+
+                <div className="text-gray-700 space-y-4 text-sm leading-relaxed">
+                  <p>
+                    Este día de hoy cumplimos 1 añito y 2 meses (426 días), llenos de amor, risas y abrazos sinceros,
+                    donde recuerdo tus ojos que aún me hacen temblar, como aquel primer día en que empezamos a hablar.
+                  </p>
+
+                  <p>
+                    Sé que soy un tontote que te hace renegar, pero mi amor por ti es mucho más de lo que puedes
+                    imaginar. Te amo muchito, mi princesita 🫶
+                  </p>
+
+                  <p className="text-red-600 font-semibold text-lg">¡Feliz Aniversario Mi Princesita hermosa!</p>
+
+                  <p className="text-sm text-gray-500 italic">
+                    Con cariño,
+                    <br />
+                    El tonto del Miguel Angel
+                    <br />
+                    (Perdoncito sé que soy un tonto al escribir)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-center mt-6 text-red-600 font-medium">
+          {cardFlipped ? "Haz clic para cerrar la carta" : "La carta se abrirá automáticamente..."}
         </p>
       </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="assets/js/main.js"></script>
-  </body>
-</html>
+  )
+}
